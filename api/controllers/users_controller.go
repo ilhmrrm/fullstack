@@ -62,7 +62,7 @@ func (server *Server) GetUsers(w http.ResponseWriter, r *http.Request) {
 func (server *Server) GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	uid, err := strconv.ParseInt(vars["id"], 10, 32)
+	uid, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -81,7 +81,7 @@ func (server *Server) GetUser(w http.ResponseWriter, r *http.Request) {
 func (server *Server) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	uid, err := strconv.ParseInt(vars["id"], 10, 32)
+	uid, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -103,7 +103,7 @@ func (server *Server) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	tokenID, err := auth.ExtractTokenID(r)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, errors.New("Unauthorized"))
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
 

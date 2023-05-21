@@ -38,7 +38,7 @@ func (server *Server) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	uid, err := auth.ExtractTokenID(r)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, errors.New("Unauthorized"))
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
 
@@ -63,7 +63,7 @@ func (server *Server) GetPosts(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := post.FindAllPosts(server.DB)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -102,7 +102,7 @@ func (server *Server) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	// check if the auth is valid and get the user id from it
 	uid, err := auth.ExtractTokenID(r)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
 
@@ -137,7 +137,7 @@ func (server *Server) UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 	// check if the request user_id is equal to the one gotten from token
 	if uid != postUpdate.AuthorID {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
 
@@ -174,13 +174,13 @@ func (server *Server) DeletePost(w http.ResponseWriter, r *http.Request) {
 	// user authenticated
 	uid, err := auth.ExtractTokenID(r)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 		return
 	}
 
 	// check if the post exists
 
-	post := &models.Post{}
+	post := models.Post{}
 	err = server.DB.Debug().Model(models.Post{}).Where("id = ?", pid).Take(&post).Error
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, errors.New("Unauthorized"))
